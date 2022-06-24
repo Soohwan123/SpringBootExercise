@@ -16,6 +16,7 @@ public class PersonDataAccessService implements PersonDAO{
 
     
     private final JdbcTemplate jdbcTemplate;
+    Person person;
     @Autowired
     public PersonDataAccessService(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
@@ -28,8 +29,14 @@ public class PersonDataAccessService implements PersonDAO{
 
     @Override
     public List<Person> selectAllPeople() {
-        String sql = "SELECT * FROM person"; 
-        List<Person> people = jdbcTemplate.query(sql, BeanPropertyRowMapper(Person.class));
+        final String sql = "SELECT id, name FROM person"; 
+/*             jdbcTemplate.query(sql, (resultSet, i) -> {
+                UUID id = UUID.fromString(resultSet.getString("id"));
+                String name = resultSet.getString("name");
+                return new Person(id, name);
+        }, new Person[] {id, name}); 
+        return List.of(new Person(UUID.randomUUID(), "FROM POSTGRES DB")); */
+        return jdbcTemplate.query(sql, new PersonRowMapper());
     }
 
     @Override
